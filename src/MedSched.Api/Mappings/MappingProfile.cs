@@ -9,7 +9,7 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<CreateAppointmentRequest, Appointment>();
-        CreateMap<GetAppointmentResponse, Appointment>();
+        CreateMap<AppointmentRequest, Appointment>();
+        CreateMap<Appointment, GetAppointmentResponse>();
     }
 }

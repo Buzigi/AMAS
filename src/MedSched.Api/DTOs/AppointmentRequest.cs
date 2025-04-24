@@ -2,7 +2,7 @@ using System;
 
 namespace MedSched.Api.DTOs;
 
-public class CreateAppointmentRequest
+public class AppointmentRequest
 {
     public string? PatientName { get; set; }
     public string? HealthcareProfessionalName { get; set; }
