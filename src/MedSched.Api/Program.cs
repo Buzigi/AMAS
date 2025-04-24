@@ -13,6 +13,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<MedSchedContext>(opt =>
     opt.UseInMemoryDatabase("MedSchedDB"));
 
+//Register AutoMapper
+builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddControllers();
 
 var app = builder.Build();

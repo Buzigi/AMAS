@@ -11,5 +11,5 @@ public class MedSchedContext : DbContext
     {
     }
 
-    public DbSet<Appointment> appointments { get; set; }
+    public DbSet<Appointment> Appointments { get; set; }
 }
