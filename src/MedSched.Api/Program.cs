@@ -1,9 +1,19 @@
+using MedSched.Api.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+//Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//Register DB Context
+builder.Services.AddDbContext<MedSchedContext>(opt =>
+    opt.UseInMemoryDatabase("MedSchedDB"));
+
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -14,5 +24,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapControllers();
 app.UseHttpsRedirection();
 app.Run();
