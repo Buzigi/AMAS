@@ -12,4 +12,9 @@ public class MedSchedContext : DbContext
     }
 
     public DbSet<Appointment> Appointments { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Appointment>().HasKey(a => a.Id);
+    }
 }

@@ -1,5 +1,6 @@
 using MedSched.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using SQLitePCL;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,9 +10,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Initialize SQLitePCL batteries
+Batteries.Init();
+
 //Register DB Context
 builder.Services.AddDbContext<MedSchedContext>(opt =>
-    opt.UseInMemoryDatabase("MedSchedDB"));
+    opt.UseSqlite("Data Source=Data/appointments.db"));
+
+
+Directory.CreateDirectory("Data"); // ensure folder exists
 
 //Register AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
