@@ -29,14 +29,21 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Apply migrations automatically
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var context = scope.ServiceProvider.GetRequiredService<MedSchedContext>();
+    context.Database.Migrate();
 }
 
+//Always allow Swagger
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.UseRouting();
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment() && !app.Environment.IsEnvironment("Docker"))
+{
+    app.UseHttpsRedirection();
+}
 app.MapControllers();
 app.Run();

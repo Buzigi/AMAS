@@ -121,7 +121,9 @@ namespace MedSched.Api.Controllers
                     return NotFound(errorMessage);
                 }
 
-                existingAppointment.AppointmentDate = updateReq.AppointmentDate != default ? updateReq.AppointmentDate : existingAppointment.AppointmentDate;
+                existingAppointment.AppointmentDate = updateReq.AppointmentDate != default ? 
+                    DateTime.SpecifyKind(updateReq.AppointmentDate, DateTimeKind.Utc) : 
+                    existingAppointment.AppointmentDate;
                 existingAppointment.Description = !string.IsNullOrEmpty(updateReq.Description) ? updateReq.Description : existingAppointment.Description;
                 existingAppointment.Duration = updateReq.Duration != 0 ? updateReq.Duration : existingAppointment.Duration;
                 existingAppointment.HealthcareProfessionalName = !string.IsNullOrEmpty(updateReq.HealthcareProfessionalName) ?

@@ -15,6 +15,11 @@ public class MedSchedContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Appointment>().HasKey(a => a.Id);
+        modelBuilder.Entity<Appointment>(entity =>
+        {
+            entity.HasKey(a => a.Id);
+            entity.Property(e => e.AppointmentDate)
+                .HasColumnType("timestamp with time zone");
+        });
     }
 }
