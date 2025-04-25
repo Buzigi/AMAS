@@ -405,3 +405,4 @@ FodyWeavers.xsd
 localhost.crt
 .gitignore
 localhost.key
+.env

@@ -7,10 +7,13 @@ services:
       - "80:80"
       - "443:443"
       - "5077:5077"
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80;https://+:443
       - ConnectionStrings__PostgresConnection=Host=postgres;Port=5432;Database=MedSchedDb;Username=MedSchedUser;Password=MedSchedPass
+      - RENDER_POSTGRES_URL=${RENDER_POSTGRES_URL}
     depends_on:
       - postgres
 

@@ -20,7 +20,11 @@ builder.Services.AddSwaggerGen();
 
 // Register PostgresSQL
 builder.Services.AddDbContext<MedSchedContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
+{
+    var connectionString = Environment.GetEnvironmentVariable("RENDER_POSTGRES_URL")
+        ?? builder.Configuration.GetConnectionString("PostgresConnection");
+    opt.UseNpgsql(connectionString);
+});
 
 //Register AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
