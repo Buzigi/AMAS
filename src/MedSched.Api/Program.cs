@@ -1,10 +1,19 @@
 using MedSched.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using SQLitePCL;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+// Register Serilog
+builder.Host.UseSerilog((context, services, configuration) =>
+    configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+);
 
 //Swagger
 builder.Services.AddEndpointsApiExplorer();
