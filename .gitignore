@@ -402,3 +402,6 @@ FodyWeavers.xsd
 *.sln.iml
 .DS_Store
 .editorconfig
+localhost.crt
+.gitignore
+localhost.key

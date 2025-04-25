@@ -1,0 +1,29 @@
+services:
+  medsched.api:
+    build:
+      context: ./src/MedSched.Api
+      dockerfile: dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+      - "5077:5077"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80;https://+:443
+      - ConnectionStrings__PostgresConnection=Host=postgres;Port=5432;Database=MedSchedDb;Username=MedSchedUser;Password=MedSchedPass
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: MedSchedUser
+      POSTGRES_PASSWORD: MedSchedPass
+      POSTGRES_DB: MedSchedDb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

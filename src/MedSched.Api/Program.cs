@@ -1,7 +1,6 @@
 using MedSched.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using SQLitePCL;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,15 +18,9 @@ builder.Host.UseSerilog((context, services, configuration) =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Initialize SQLitePCL batteries
-Batteries.Init();
-
-//Register DB Context
+// Register PostgresSQL
 builder.Services.AddDbContext<MedSchedContext>(opt =>
-    opt.UseSqlite("Data Source=Data/appointments.db"));
-
-
-Directory.CreateDirectory("Data"); // ensure folder exists
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
 
 //Register AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
@@ -43,6 +36,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapControllers();
+app.UseRouting();
 app.UseHttpsRedirection();
+app.MapControllers();
 app.Run();
