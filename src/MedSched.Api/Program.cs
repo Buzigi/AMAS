@@ -1,5 +1,7 @@
 using MedSched.Api.Converters;
 using MedSched.Api.Data;
+using MedSched.Api.Interfaces;
+using MedSched.Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -32,7 +34,10 @@ builder.Services.AddDbContext<MedSchedContext>(opt =>
 //Register AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
 
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+
 builder.Services.AddControllers();
+
 
 var app = builder.Build();
 
