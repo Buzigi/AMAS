@@ -2,7 +2,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src/MedSched.Api
 
-EXPOSE 443
 EXPOSE 5077
 
 COPY . .

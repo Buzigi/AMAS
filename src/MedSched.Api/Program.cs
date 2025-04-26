@@ -1,3 +1,4 @@
+using MedSched.Api.Converters;
 using MedSched.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -21,8 +22,10 @@ builder.Services.AddSwaggerGen();
 // Register PostgresSQL
 builder.Services.AddDbContext<MedSchedContext>(opt =>
 {
-    var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
-        ?? builder.Configuration.GetConnectionString("PostgresConnection");
+    var dbUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+    var connectionString = dbUrl != null ?
+        ConnectionStringConverter.ConvertDatabaseUrlToConnectionString(dbUrl) :
+        builder.Configuration.GetConnectionString("PostgresConnection");
     opt.UseNpgsql(connectionString);
 });
 
