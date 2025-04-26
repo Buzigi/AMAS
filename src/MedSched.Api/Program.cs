@@ -21,7 +21,7 @@ builder.Services.AddSwaggerGen();
 // Register PostgresSQL
 builder.Services.AddDbContext<MedSchedContext>(opt =>
 {
-    var connectionString = Environment.GetEnvironmentVariable("RENDER_POSTGRES_URL")
+    var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
         ?? builder.Configuration.GetConnectionString("PostgresConnection");
     opt.UseNpgsql(connectionString);
 });
