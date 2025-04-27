@@ -81,7 +81,7 @@ The `AppointmentsController` in the `src/MedSched.Api/Controllers/` directory ha
 - **GET /api/Appointments**: Retrieves all appointments.
 - **GET /api/Appointments/{id}**: Retrieves a specific appointment by its ID.
 - **GET /api/Appointments/{hcName}**: Retrieves appointments for a specific healthcare professional.
-- **POST /api/Appointments**: Creates a new appointment.
+- **POST /api/Appointments**: Creates a new appointment. Checks for conflicts.
 - **PUT /api/Appointments/{id}**: Updates an existing appointment by its ID.
 - **DELETE /api/Appointments/{id}**: Deletes an appointment by its ID.
 
