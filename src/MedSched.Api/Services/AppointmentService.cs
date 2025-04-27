@@ -13,15 +13,18 @@ public class AppointmentService : IAppointmentService
     private readonly MedSchedContext _context;
     private readonly IMapper _mapper;
     private readonly ILogger<AppointmentService> _logger;
+    private readonly IConfiguration _config;
 
     public AppointmentService(
             MedSchedContext context,
             IMapper mapper,
-            ILogger<AppointmentService> logger)
+            ILogger<AppointmentService> logger,
+            IConfiguration configuration)
     {
         _context = context;
         _mapper = mapper;
         _logger = logger;
+        _config = configuration;
     }
 
     public async Task<IEnumerable<GetAppointmentResponse>> GetAllAppointmentsAsync()
@@ -98,11 +101,27 @@ public class AppointmentService : IAppointmentService
     {
         try
         {
+            var hasConflict = await HasSchedConflictAsync(
+                appointmentReq.HealthcareProfessionalName,
+                appointmentReq.AppointmentDate,
+                appointmentReq.Duration);
+            if (hasConflict)
+            {
+                var suggestedTimes = await SuggestNewTimes(
+                    appointmentReq.HealthcareProfessionalName,
+                    appointmentReq.AppointmentDate,
+                    appointmentReq.Duration);
+
+                return new CreateAppointmentResponse()
+                {
+                    Success = false,
+                    SuggestedTimes = suggestedTimes
+                };
+            }
+
             var appointment = _mapper.Map<Appointment>(appointmentReq);
             _context.Appointments.Add(appointment);
             await _context.SaveChangesAsync();
-
-            //TODO: add check if scheduale conflict + suggest new times
             var appointmentRes = new CreateAppointmentResponse()
             {
                 AppointmentId = appointment.Id,
@@ -182,5 +201,64 @@ public class AppointmentService : IAppointmentService
             _logger.LogError(ex, errorMessage);
             throw new Exception(errorMessage);
         }
+    }
+
+    private async Task<bool> HasSchedConflictAsync(string hcProfName, DateTime wantedDate, int duration)
+    {
+        var endDate = wantedDate.AddMinutes(duration);
+
+        return await _context.Appointments.AnyAsync(a =>
+        (hcProfName == "All" || a.HealthcareProfessionalName == hcProfName) &&
+        a.AppointmentDate < endDate &&
+        wantedDate < a.AppointmentDate.AddMinutes(a.Duration));
+    }
+
+    private async Task<List<SuggestedTimeResponse>> SuggestNewTimes(string hcProfName, DateTime wantedDate, int duration)
+    {
+        var suggestions = new List<SuggestedTimeResponse>();
+
+        int maxSuggestions = int.Parse(_config["NumberOfMeetingSuggestions"] ?? "4");
+
+        var suggestionsStart = wantedDate.AddDays(-1) > DateTime.Now ? wantedDate.AddDays(-1) : DateTime.Now;
+
+        var scheduled = await _context.Appointments
+            .Where(a =>
+                (hcProfName == "All" || a.HealthcareProfessionalName == hcProfName) &&
+                a.AppointmentDate >= suggestionsStart)
+            .OrderBy(a => a.AppointmentDate)
+            .ToListAsync();
+
+
+        foreach (var appointment in scheduled)
+        {
+            var availableDuration = appointment.AppointmentDate - suggestionsStart;
+            if (availableDuration >= new TimeSpan(duration))
+            {
+                suggestions.Add(new SuggestedTimeResponse()
+                {
+                    AppointmentStart = suggestionsStart,
+                    Duration = duration
+                });
+
+                if (suggestions.Count == maxSuggestions)
+                {
+                    return suggestions;
+                }
+            }
+
+            suggestionsStart = suggestionsStart.AddMinutes(duration);
+        }
+
+        while (suggestions.Count < maxSuggestions)
+        {
+            suggestions.Add(new SuggestedTimeResponse()
+            {
+                AppointmentStart = suggestionsStart,
+                Duration = duration
+            });
+            suggestionsStart.AddMinutes(duration);
+        }
+
+        return suggestions;
     }
 }

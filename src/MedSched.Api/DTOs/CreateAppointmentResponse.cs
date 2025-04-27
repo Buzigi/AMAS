@@ -9,5 +9,5 @@ public class CreateAppointmentResponse
 
     public int AppointmentId { get; set; }
 
-    public List<(DateTime, int)> SuggestedTimes { get; set; } = new();
+    public List<SuggestedTimeResponse> SuggestedTimes { get; set; } = new();
 }
