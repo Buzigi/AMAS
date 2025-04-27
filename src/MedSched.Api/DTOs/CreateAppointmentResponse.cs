@@ -6,8 +6,5 @@ namespace MedSched.Api.DTOs;
 public class CreateAppointmentResponse
 {
     public bool Success { get; set; }
-
-    public int AppointmentId { get; set; }
-
     public List<SuggestedTimeResponse> SuggestedTimes { get; set; } = new();
 }

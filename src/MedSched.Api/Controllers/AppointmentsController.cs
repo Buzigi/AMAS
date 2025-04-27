@@ -102,11 +102,18 @@ namespace MedSched.Api.Controllers
         {
             try
             {
-                var success = await _appointmentService.UpdateAppointmentAsync(id, updateReq);
+                var response = await _appointmentService.UpdateAppointmentAsync(id, updateReq);
 
-                if (!success)
+                if (!response.Success)
                 {
-                    return NotFound($"No appointment with id= {id} found for update.");
+                    if (response.SuggestedTimes.Count == 0)
+                    {
+                        return NotFound($"No appointment with id= {id} found for update.");
+                    }
+                    else
+                    {
+                        return Ok(response);
+                    }
                 }
 
                 return Ok();

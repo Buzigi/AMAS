@@ -9,6 +9,6 @@ public interface IAppointmentService
     Task<GetAppointmentResponse?> GetAppointmentByIdAsync(int id);
     Task<IEnumerable<GetAppointmentResponse>?> GetAppointmentsByHCProfessionalAsync(string hcName);
     Task<CreateAppointmentResponse> CreateAppointmentAsync(AppointmentRequest appointmentReq);
-    Task<bool> UpdateAppointmentAsync(int id, AppointmentRequest updateReq);
+    Task<CreateAppointmentResponse> UpdateAppointmentAsync(int id, AppointmentRequest updateReq);
     Task<bool> DeleteAppointmentAsync(int id);
 }

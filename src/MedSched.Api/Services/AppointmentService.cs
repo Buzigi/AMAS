@@ -124,7 +124,6 @@ public class AppointmentService : IAppointmentService
             await _context.SaveChangesAsync();
             var appointmentRes = new CreateAppointmentResponse()
             {
-                AppointmentId = appointment.Id,
                 Success = true
             };
 
@@ -140,7 +139,7 @@ public class AppointmentService : IAppointmentService
         }
     }
 
-    public async Task<bool> UpdateAppointmentAsync(int id, AppointmentRequest updateReq)
+    public async Task<CreateAppointmentResponse> UpdateAppointmentAsync(int id, AppointmentRequest updateReq)
     {
         try
         {
@@ -148,24 +147,48 @@ public class AppointmentService : IAppointmentService
             if (existingAppointment == null)
             {
                 _logger.LogWarning($"No appointment with id= {id} found for update.");
-                return false;
+                return new CreateAppointmentResponse() { Success = false };
             }
 
-            existingAppointment.AppointmentDate = updateReq.AppointmentDate != default ?
-                DateTime.SpecifyKind(updateReq.AppointmentDate, DateTimeKind.Utc) : //Compatability with Postgres definitions
-                existingAppointment.AppointmentDate;
-            existingAppointment.Description = !string.IsNullOrEmpty(updateReq.Description) ? updateReq.Description : existingAppointment.Description;
-            existingAppointment.Duration = updateReq.Duration != 0 ? updateReq.Duration : existingAppointment.Duration;
-            existingAppointment.HealthcareProfessionalName = !string.IsNullOrEmpty(updateReq.HealthcareProfessionalName) ?
+            updateReq.HealthcareProfessionalName = string.Compare(updateReq.HealthcareProfessionalName, "All") != 0 ?
                 updateReq.HealthcareProfessionalName :
                 existingAppointment.HealthcareProfessionalName;
+            updateReq.AppointmentDate = updateReq.AppointmentDate != default ?
+                DateTime.SpecifyKind(updateReq.AppointmentDate, DateTimeKind.Utc) :
+                existingAppointment.AppointmentDate;
+            updateReq.Duration = updateReq.Duration != 0 ? updateReq.Duration : existingAppointment.Duration;
+
+            var hasConflict = await HasSchedConflictAsync(
+                updateReq.HealthcareProfessionalName,
+                updateReq.AppointmentDate,
+                updateReq.Duration,
+                id);
+            if (hasConflict)
+            {
+                var suggestedTimes = await SuggestNewTimes(
+                    updateReq.HealthcareProfessionalName,
+                    updateReq.AppointmentDate,
+                    updateReq.Duration,
+                    id);
+
+                return new CreateAppointmentResponse()
+                {
+                    Success = false,
+                    SuggestedTimes = suggestedTimes
+                };
+            }
+
+            existingAppointment.AppointmentDate = updateReq.AppointmentDate;
+            existingAppointment.Description = !string.IsNullOrEmpty(updateReq.Description) ? updateReq.Description : existingAppointment.Description;
+            existingAppointment.Duration = updateReq.Duration;
+            existingAppointment.HealthcareProfessionalName = updateReq.HealthcareProfessionalName;
             existingAppointment.PatientName = !string.IsNullOrEmpty(updateReq.PatientName) ? updateReq.PatientName : existingAppointment.PatientName;
 
             await _context.SaveChangesAsync();
 
             _logger.LogInformation($"Updated appointment with id= {id} details");
 
-            return true;
+            return new CreateAppointmentResponse() { Success = true };
         }
         catch (Exception ex)
         {
@@ -203,28 +226,30 @@ public class AppointmentService : IAppointmentService
         }
     }
 
-    private async Task<bool> HasSchedConflictAsync(string hcProfName, DateTime wantedDate, int duration)
+    private async Task<bool> HasSchedConflictAsync(string hcProfName, DateTime wantedDate, int duration, int id = 0)
     {
         var endDate = wantedDate.AddMinutes(duration);
 
         return await _context.Appointments.AnyAsync(a =>
         (hcProfName == "All" || a.HealthcareProfessionalName == hcProfName) &&
         a.AppointmentDate < endDate &&
-        wantedDate < a.AppointmentDate.AddMinutes(a.Duration));
+        wantedDate < a.AppointmentDate.AddMinutes(a.Duration) &&
+        (id == 0 || a.Id != id));
     }
 
-    private async Task<List<SuggestedTimeResponse>> SuggestNewTimes(string hcProfName, DateTime wantedDate, int duration)
+    private async Task<List<SuggestedTimeResponse>> SuggestNewTimes(string hcProfName, DateTime wantedDate, int duration, int id = 0)
     {
         var suggestions = new List<SuggestedTimeResponse>();
 
         int maxSuggestions = int.Parse(_config["NumberOfMeetingSuggestions"] ?? "4");
 
-        var suggestionsStart = wantedDate.AddDays(-1) > DateTime.Now ? wantedDate.AddDays(-1) : DateTime.Now;
+        var suggestionsStart = wantedDate > DateTime.UtcNow.AddMinutes(5) ? wantedDate : DateTime.UtcNow.AddMinutes(5);
 
         var scheduled = await _context.Appointments
             .Where(a =>
                 (hcProfName == "All" || a.HealthcareProfessionalName == hcProfName) &&
-                a.AppointmentDate >= suggestionsStart)
+                a.AppointmentDate.AddMinutes(a.Duration) >= suggestionsStart &&
+                (id == 0 || a.Id != id))
             .OrderBy(a => a.AppointmentDate)
             .ToListAsync();
 
@@ -232,7 +257,7 @@ public class AppointmentService : IAppointmentService
         foreach (var appointment in scheduled)
         {
             var availableDuration = appointment.AppointmentDate - suggestionsStart;
-            if (availableDuration >= new TimeSpan(duration))
+            if (availableDuration >= TimeSpan.FromMinutes(duration))
             {
                 suggestions.Add(new SuggestedTimeResponse()
                 {
@@ -244,9 +269,12 @@ public class AppointmentService : IAppointmentService
                 {
                     return suggestions;
                 }
+                suggestionsStart = suggestionsStart.AddMinutes(duration);
             }
-
-            suggestionsStart = suggestionsStart.AddMinutes(duration);
+            else
+            {
+                suggestionsStart = appointment.AppointmentDate.AddMinutes(appointment.Duration);
+            }
         }
 
         while (suggestions.Count < maxSuggestions)
@@ -256,7 +284,7 @@ public class AppointmentService : IAppointmentService
                 AppointmentStart = suggestionsStart,
                 Duration = duration
             });
-            suggestionsStart.AddMinutes(duration);
+            suggestionsStart = suggestionsStart.AddMinutes(duration);
         }
 
         return suggestions;
