@@ -7,14 +7,7 @@ EXPOSE 5077
 COPY . .
 RUN dotnet publish -c Release -o /app/publish
 
-# Copy the tests directory into the container
-COPY ../tests /src/tests
-
-# Run tests
-WORKDIR /src/tests/MedSched.Api.UnitTests
-RUN dotnet test MedSched.Api.UnitTests.csproj --no-build --verbosity normal
-
-# Ensure the working directory is reset to the API project after running tests
+# Update the working directory to reset after publishing
 WORKDIR /src
 
 # Stage 2 - runtime

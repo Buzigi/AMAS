@@ -1,8 +1,8 @@
 services:
   medsched.api:
     build:
-      context: ./
-      dockerfile: src/MedSched.Api/dockerfile
+      context: ./src/MedSched.Api
+      dockerfile: dockerfile
     ports:
       - "80:80"
       - "5077:5077"
@@ -15,6 +15,13 @@ services:
       - RENDER_POSTGRES_URL=${RENDER_POSTGRES_URL}
     depends_on:
       - postgres
+
+  tests:
+    build:
+      context: .
+      dockerfile: tests/MedSched.Api.UnitTests/dockerfile
+    depends_on:
+      - medsched.api
 
   postgres:
     image: postgres:17

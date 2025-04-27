@@ -1,0 +1,15 @@
+# Stage 1 - build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy the entire project structure to ensure all dependencies are available
+COPY . .
+
+# Restore dependencies
+RUN dotnet restore /src/tests/MedSched.Api.UnitTests/MedSched.Api.UnitTests.csproj
+
+# Build the tests project
+RUN dotnet build /src/tests/MedSched.Api.UnitTests/MedSched.Api.UnitTests.csproj -c Release
+
+# Run tests
+CMD ["dotnet", "test", "/src/tests/MedSched.Api.UnitTests/MedSched.Api.UnitTests.csproj", "--no-build", "--verbosity", "normal"]
