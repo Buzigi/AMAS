@@ -1,8 +1,8 @@
 services:
   medsched.api:
     build:
-      context: ./src/MedSched.Api
-      dockerfile: dockerfile
+      context: ./
+      dockerfile: src/MedSched.Api/dockerfile
     ports:
       - "80:80"
       - "5077:5077"
