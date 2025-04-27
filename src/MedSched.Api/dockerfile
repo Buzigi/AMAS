@@ -7,6 +7,10 @@ EXPOSE 5077
 COPY . .
 RUN dotnet publish -c Release -o /app/publish
 
+# Run tests
+WORKDIR /src/tests/MedSched.Api.UnitTests
+RUN dotnet test --no-build --verbosity normal
+
 # Stage 2 - runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
