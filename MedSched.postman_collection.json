@@ -1,0 +1,514 @@
+{
+	"info": {
+		"_postman_id": "c2e7a83f-83bb-4d76-b70f-e2ea7d44ae04",
+		"name": "MedSched",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1223534"
+	},
+	"item": [
+		{
+			"name": "Local",
+			"item": [
+				{
+					"name": "GET appointments",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5077/api/appointments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5077",
+							"path": [
+								"api",
+								"appointments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET dr appointments",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5077/api/appointments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5077",
+							"path": [
+								"api",
+								"appointments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET appointment by id",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5077/api/appointments/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5077",
+							"path": [
+								"api",
+								"appointments",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST create appointment",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"patientName\": \"Boaz\",\n        \"healthcareProfessionalName\": \"test1\",\n        \"appointmentDate\": \"2025-05-24T19:30:24.4Z\",\n        \"duration\": 30,\n        \"description\": \"Ear infection\"\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5077/api/appointments/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5077",
+							"path": [
+								"api",
+								"appointments",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT update appointment",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"patientName\": \"Boaz\",\n    \"healthcareProfessionalName\": \"Dr. Zisman\",\n    \"appointmentDate\": \"2025-04-24T15:38:24.4\",\n    \"duration\": 10,\n    \"description\": \"Interview 2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5077/api/appointments/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5077",
+							"path": [
+								"api",
+								"appointments",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE appointment",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"Interview 3\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5077/api/appointments/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5077",
+							"path": [
+								"api",
+								"appointments",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Docker",
+			"item": [
+				{
+					"name": "GET appointments",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:80/api/appointments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"api",
+								"appointments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET appointment by id",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:80/api/appointments/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"api",
+								"appointments",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST create appointment",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"patientName\": \"Boaz\",\n    \"healthcareProfessionalName\": \"Dr. Zisman\",\n    \"appointmentDate\": \"2025-05-24T15:38:24.4\",\n    \"duration\": 10,\n    \"description\": \"Interview\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:80/api/appointments/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"api",
+								"appointments",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT update appointment",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"patientName\": \"Boaz\",\n    \"healthcareProfessionalName\": \"Dr. Zisman\",\n    \"appointmentDate\": \"2025-04-24T15:38:24.4\",\n    \"duration\": 10,\n    \"description\": \"Interview 2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:80/api/appointments/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"api",
+								"appointments",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE appointment",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"Interview 3\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:80/api/appointments/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"api",
+								"appointments",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Render.com",
+			"item": [
+				{
+					"name": "GET appointments",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://medsched.buzigi.com/api/appointments",
+							"protocol": "https",
+							"host": [
+								"medsched",
+								"buzigi",
+								"com"
+							],
+							"path": [
+								"api",
+								"appointments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET dr appointment",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5077/api/appointments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5077",
+							"path": [
+								"api",
+								"appointments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET appointment by id",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://medsched.buzigi.com/api/appointments/5",
+							"protocol": "https",
+							"host": [
+								"medsched",
+								"buzigi",
+								"com"
+							],
+							"path": [
+								"api",
+								"appointments",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST create appointment",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"patientName\": \"Boaz\",\n    \"healthcareProfessionalName\": \"Dr. Zisman\",\n    \"appointmentDate\": \"2025-04-24T15:38:24.4\",\n    \"duration\": 10,\n    \"description\": \"Interview\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://medsched.buzigi.com/api/appointments/",
+							"protocol": "https",
+							"host": [
+								"medsched",
+								"buzigi",
+								"com"
+							],
+							"path": [
+								"api",
+								"appointments",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT update appointment",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"patientName\": \"Boaz\",\n    \"healthcareProfessionalName\": \"Dr. Zisman\",\n    \"appointmentDate\": \"2025-04-24T15:38:24.4\",\n    \"duration\": 10,\n    \"description\": \"Interview 2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://medsched.buzigi.com/api/appointments/6",
+							"protocol": "https",
+							"host": [
+								"medsched",
+								"buzigi",
+								"com"
+							],
+							"path": [
+								"api",
+								"appointments",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE appointment",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"Interview 3\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://medsched.buzigi.com/api/appointments/6",
+							"protocol": "https",
+							"host": [
+								"medsched",
+								"buzigi",
+								"com"
+							],
+							"path": [
+								"api",
+								"appointments",
+								"6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
