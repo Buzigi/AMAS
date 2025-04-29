@@ -20,7 +20,7 @@ AMAS is a web-based application designed to manage medical appointments efficien
 1. **Clone the Repository**
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Buzigi/AMAS
    cd AMAS
    ```
 
