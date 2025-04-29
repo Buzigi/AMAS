@@ -33,6 +33,30 @@
 					"response": []
 				},
 				{
+					"name": "GET appointment by id",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5077/api/appointments/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5077",
+							"path": [
+								"api",
+								"appointments",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "GET dr appointments",
 					"request": {
 						"auth": {
@@ -50,30 +74,6 @@
 							"path": [
 								"api",
 								"appointments"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "GET appointment by id",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:5077/api/appointments/1",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5077",
-							"path": [
-								"api",
-								"appointments",
-								"1"
 							]
 						}
 					},
@@ -231,6 +231,29 @@
 					"response": []
 				},
 				{
+					"name": "GET dr appointment",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:80/api/appointments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "80",
+							"path": [
+								"api",
+								"appointments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "POST create appointment",
 					"request": {
 						"auth": {
@@ -359,29 +382,6 @@
 					"response": []
 				},
 				{
-					"name": "GET dr appointment",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:5077/api/appointments",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5077",
-							"path": [
-								"api",
-								"appointments"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "GET appointment by id",
 					"request": {
 						"auth": {
@@ -401,6 +401,29 @@
 								"api",
 								"appointments",
 								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET dr appointment",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5077/api/appointments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5077",
+							"path": [
+								"api",
+								"appointments"
 							]
 						}
 					},
