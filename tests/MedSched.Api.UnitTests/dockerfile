@@ -12,4 +12,4 @@ RUN dotnet restore /src/tests/MedSched.Api.UnitTests/MedSched.Api.UnitTests.cspr
 RUN dotnet build /src/tests/MedSched.Api.UnitTests/MedSched.Api.UnitTests.csproj -c Release
 
 # Run tests
-CMD ["dotnet", "test", "/src/tests/MedSched.Api.UnitTests/MedSched.Api.UnitTests.csproj", "--no-build", "--verbosity", "normal"]
+CMD ["dotnet", "test", "/src/tests/MedSched.Api.UnitTests/MedSched.Api.UnitTests.csproj", "--no-build", "--configuration", "Release", "--verbosity", "normal"]
