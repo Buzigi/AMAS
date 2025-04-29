@@ -6,12 +6,10 @@ services:
     ports:
       - "80:80"
       - "5077:5077"
-    env_file:
-      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:80
-      - RENDER_POSTGRES_URL=${RENDER_POSTGRES_URL}
+      - DATABASE_URL=${DATABASE_URL}
 
   tests:
     build:
