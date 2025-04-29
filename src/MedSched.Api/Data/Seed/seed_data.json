@@ -1,0 +1,142 @@
+[
+  {
+    "patientName": "Boaz",
+    "healthcareProfessionalName": "Dr. Smith",
+    "appointmentDate": "2025-05-24T08:00:00Z",
+    "duration": 30,
+    "description": "Ear infection check-up"
+  },
+  {
+    "patientName": "Alice",
+    "healthcareProfessionalName": "Dr. Johnson",
+    "appointmentDate": "2025-05-24T08:30:00Z",
+    "duration": 45,
+    "description": "Routine dental cleaning"
+  },
+  {
+    "patientName": "Charlie",
+    "healthcareProfessionalName": "Dr. Williams",
+    "appointmentDate": "2025-05-24T09:15:00Z",
+    "duration": 60,
+    "description": "Physical therapy session"
+  },
+  {
+    "patientName": "Dana",
+    "healthcareProfessionalName": "Dr. Smith",
+    "appointmentDate": "2025-05-24T10:15:00Z",
+    "duration": 30,
+    "description": "Follow-up after surgery"
+  },
+  {
+    "patientName": "Eli",
+    "healthcareProfessionalName": "Dr. Johnson",
+    "appointmentDate": "2025-05-24T10:45:00Z",
+    "duration": 20,
+    "description": "Blood pressure check"
+  },
+  {
+    "patientName": "Fiona",
+    "healthcareProfessionalName": "Dr. Williams",
+    "appointmentDate": "2025-05-24T11:05:00Z",
+    "duration": 30,
+    "description": "Migraine consultation"
+  },
+  {
+    "patientName": "George",
+    "healthcareProfessionalName": "Dr. Smith",
+    "appointmentDate": "2025-05-24T11:35:00Z",
+    "duration": 45,
+    "description": "Annual physical exam"
+  },
+  {
+    "patientName": "Hannah",
+    "healthcareProfessionalName": "Dr. Johnson",
+    "appointmentDate": "2025-05-24T12:20:00Z",
+    "duration": 30,
+    "description": "Pediatric vaccination"
+  },
+  {
+    "patientName": "Ian",
+    "healthcareProfessionalName": "Dr. Williams",
+    "appointmentDate": "2025-05-24T12:50:00Z",
+    "duration": 60,
+    "description": "Skin rash diagnosis"
+  },
+  {
+    "patientName": "Jasmine",
+    "healthcareProfessionalName": "Dr. Smith",
+    "appointmentDate": "2025-05-24T13:50:00Z",
+    "duration": 30,
+    "description": "Asthma follow-up"
+  },
+  {
+    "patientName": "Kevin",
+    "healthcareProfessionalName": "Dr. Johnson",
+    "appointmentDate": "2025-05-24T14:20:00Z",
+    "duration": 45,
+    "description": "Knee pain evaluation"
+  },
+  {
+    "patientName": "Lily",
+    "healthcareProfessionalName": "Dr. Williams",
+    "appointmentDate": "2025-05-24T15:05:00Z",
+    "duration": 30,
+    "description": "Nutritional consultation"
+  },
+  {
+    "patientName": "Michael",
+    "healthcareProfessionalName": "Dr. Smith",
+    "appointmentDate": "2025-05-24T15:35:00Z",
+    "duration": 60,
+    "description": "Post-surgery rehabilitation"
+  },
+  {
+    "patientName": "Nora",
+    "healthcareProfessionalName": "Dr. Johnson",
+    "appointmentDate": "2025-05-24T16:35:00Z",
+    "duration": 30,
+    "description": "Eye infection treatment"
+  },
+  {
+    "patientName": "Oscar",
+    "healthcareProfessionalName": "Dr. Williams",
+    "appointmentDate": "2025-05-24T17:05:00Z",
+    "duration": 45,
+    "description": "Allergy testing"
+  },
+  {
+    "patientName": "Penelope",
+    "healthcareProfessionalName": "Dr. Smith",
+    "appointmentDate": "2025-05-24T17:50:00Z",
+    "duration": 30,
+    "description": "Flu vaccination"
+  },
+  {
+    "patientName": "Quentin",
+    "healthcareProfessionalName": "Dr. Johnson",
+    "appointmentDate": "2025-05-24T18:20:00Z",
+    "duration": 30,
+    "description": "Hearing test"
+  },
+  {
+    "patientName": "Rachel",
+    "healthcareProfessionalName": "Dr. Williams",
+    "appointmentDate": "2025-05-24T18:50:00Z",
+    "duration": 60,
+    "description": "Orthopedic consultation"
+  },
+  {
+    "patientName": "Samuel",
+    "healthcareProfessionalName": "Dr. Smith",
+    "appointmentDate": "2025-05-24T19:50:00Z",
+    "duration": 30,
+    "description": "Fever diagnosis"
+  },
+  {
+    "patientName": "Tina",
+    "healthcareProfessionalName": "Dr. Johnson",
+    "appointmentDate": "2025-05-24T20:20:00Z",
+    "duration": 45,
+    "description": "Back pain therapy"
+  }
+]

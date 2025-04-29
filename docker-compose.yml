@@ -11,10 +11,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__PostgresConnection=Host=postgres;Port=5432;Database=MedSchedDb;Username=MedSchedUser;Password=MedSchedPass
       - RENDER_POSTGRES_URL=${RENDER_POSTGRES_URL}
-    depends_on:
-      - postgres
 
   tests:
     build:
@@ -22,17 +19,3 @@ services:
       dockerfile: tests/MedSched.Api.UnitTests/dockerfile
     depends_on:
       - medsched.api
-
-  postgres:
-    image: postgres:17
-    environment:
-      POSTGRES_USER: MedSchedUser
-      POSTGRES_PASSWORD: MedSchedPass
-      POSTGRES_DB: MedSchedDb
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:

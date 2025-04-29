@@ -1,5 +1,6 @@
 using MedSched.Api.Converters;
 using MedSched.Api.Data;
+using MedSched.Api.Data.Seed;
 using MedSched.Api.Interfaces;
 using MedSched.Api.Services;
 using Microsoft.EntityFrameworkCore;
@@ -17,23 +18,33 @@ builder.Host.UseSerilog((context, services, configuration) =>
         .Enrich.FromLogContext()
 );
 
-//Swagger
+// Register Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Register PostgresSQL
 builder.Services.AddDbContext<MedSchedContext>(opt =>
 {
+    var environment = builder.Environment.EnvironmentName;
     var dbUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-    var connectionString = dbUrl != null ?
-        ConnectionStringConverter.ConvertDatabaseUrlToConnectionString(dbUrl) :
-        builder.Configuration.GetConnectionString("PostgresConnection");
-    opt.UseNpgsql(connectionString);
+
+    // Use InMemory database for Development or Docker (or as default)
+    if (environment == "Development" || environment == "Docker" || dbUrl == null)
+    {
+        opt.UseInMemoryDatabase("MedSchedDb");
+    }
+    // Use Postgres in [dbUrl] in Production
+    else
+    {
+        var connectionString = ConnectionStringConverter.ConvertDatabaseUrlToConnectionString(dbUrl);
+        opt.UseNpgsql(connectionString);
+    }
 });
 
-//Register AutoMapper
+// Register AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
 
+// Register own services
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
 builder.Services.AddControllers();
@@ -41,21 +52,47 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Apply migrations automatically
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<MedSchedContext>();
-    context.Database.Migrate();
-}
 
-//Always allow Swagger
+//Always allow Swagger (available in Production too)
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseRouting();
-if (!app.Environment.IsDevelopment() && !app.Environment.IsEnvironment("Docker"))
+
+// When environment is Development or Docker
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
 {
+    // Disable https locally or in Docker
     app.UseHttpsRedirection();
+
+    // Seed the database
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        var context = services.GetRequiredService<MedSchedContext>();
+        var appointmentService = services.GetRequiredService<IAppointmentService>();
+        var logger = services.GetRequiredService<ILogger<DbContextSeeder>>();
+        var env = services.GetRequiredService<IWebHostEnvironment>();
+
+        var seeder = new DbContextSeeder(
+            context,
+            appointmentService,
+            Path.Combine(env.ContentRootPath, "Data/Seed/seed_data.json"),
+            logger);
+        await seeder.SeedAsync();
+    }
 }
+// When environment is Production
+else
+{
+    // Apply migrations automatically to create DB and tables in Production
+    using (var scope = app.Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<MedSchedContext>();
+        context.Database.Migrate();
+    }
+}
+
 app.MapControllers();
+
 app.Run();

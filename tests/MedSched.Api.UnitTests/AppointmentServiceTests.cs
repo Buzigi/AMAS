@@ -6,6 +6,7 @@ using MedSched.Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic;
 using Moq;
 
 namespace MedSched.Api.UnitTests;
@@ -144,8 +145,7 @@ public class AppointmentServiceTests
         var result = await _appointmentService.GetAllAppointmentsAsync();
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Empty(result);
+        Assert.Null(result);
     }
 
     [Fact]
@@ -236,8 +236,7 @@ public class AppointmentServiceTests
         var result = await _appointmentService.GetAppointmentsByHCProfessionalAsync("dr-test1");
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Empty(result);
+        Assert.Null(result);
     }
 
     [Fact]
@@ -282,6 +281,7 @@ public class AppointmentServiceTests
     [InlineData(110, 15)]
     [InlineData(140, 30)]
     [InlineData(110, 60)]
+    [InlineData(10, 120)]
     public async Task CreateAppointmentAsync_WhenConflictExists_ReturnsUnscheduledSuggestedTimes(int timeToAdd, int duration)
     {
         // Arrange
@@ -441,6 +441,66 @@ public class AppointmentServiceTests
 
         // Assert
         Assert.Contains("An error occurred while updating the appointment", ex.Message);
+    }
+
+    #endregion
+
+    #region SuggestNewTimesAsync
+
+    [Theory]
+    [InlineData(new int[] { 0, 200, 240 }, 0, 30, new int[] { 30, 60, 90, 120 })]
+    [InlineData(new int[] { 0, 200, 240 }, 15, 30, new int[] { 30, 60, 90, 120 })]
+    [InlineData(new int[] { 15, 200, 240 }, 0, 30, new int[] { 45, 75, 105, 135 })]
+    [InlineData(new int[] { 0, 30, 200 }, 0, 30, new int[] { 60, 90, 120, 150 })]
+    [InlineData(new int[] { 15, 400, 440 }, 0, 60, new int[] { 45, 105, 165, 225 })]
+    [InlineData(new int[] { 0, 35, 70 }, 0, 30, new int[] { 100, 130, 160, 190 })]
+    [InlineData(new int[] { 0, 75, 195 }, 0, 45, new int[] { 30, 105, 150, 225 })]
+    public async Task CreateAppointmentAsync_WhenConflictExists_CorrectSuggestionOfTimes(
+        int[] schedTimes,
+        int wantedTime,
+        int wantedDuration,
+        int[] suggestedTimes)
+    {
+        // Arrange
+        ClearTestData();
+        var now = DateTime.UtcNow;
+        var request1 = new AppointmentRequest
+        {
+            AppointmentDate = now.AddMinutes(schedTimes[0]),
+            Duration = 30
+        };
+        var request2 = new AppointmentRequest
+        {
+            AppointmentDate = now.AddMinutes(schedTimes[1]),
+            Duration = 30
+        };
+        var request3 = new AppointmentRequest
+        {
+            AppointmentDate = now.AddMinutes(schedTimes[2]),
+            Duration = 30
+        };
+
+        var wanted = new AppointmentRequest
+        {
+            AppointmentDate = now.AddMinutes(wantedTime),
+            Duration = wantedDuration
+        };
+
+        _ = await _appointmentService.CreateAppointmentAsync(request1);
+        _ = await _appointmentService.CreateAppointmentAsync(request2);
+        _ = await _appointmentService.CreateAppointmentAsync(request3);
+
+        // Act
+        var result = await _appointmentService.CreateAppointmentAsync(wanted);
+
+        // Assert
+
+        Assert.False(result.Success);
+        Assert.Equal(4, result.SuggestedTimes.Count);
+        Assert.Equal(suggestedTimes[0], (result.SuggestedTimes[0].AppointmentStart - now).TotalMinutes);
+        Assert.Equal(suggestedTimes[1], (result.SuggestedTimes[1].AppointmentStart - now).TotalMinutes);
+        Assert.Equal(suggestedTimes[2], (result.SuggestedTimes[2].AppointmentStart - now).TotalMinutes);
+        Assert.Equal(suggestedTimes[3], (result.SuggestedTimes[3].AppointmentStart - now).TotalMinutes);
     }
 
     #endregion

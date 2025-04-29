@@ -27,11 +27,18 @@ public class AppointmentService : IAppointmentService
         _config = configuration;
     }
 
-    public async Task<IEnumerable<GetAppointmentResponse>> GetAllAppointmentsAsync()
+    public async Task<IEnumerable<GetAppointmentResponse>?> GetAllAppointmentsAsync()
     {
         try
         {
             var appointments = _mapper.Map<List<GetAppointmentResponse>>(await _context.Appointments.ToListAsync());
+
+            if (appointments == null || appointments.Count() == 0)
+            {
+                _logger.LogInformation("No appointments found");
+                return null;
+            }
+
             _logger.LogInformation($"Retrieved {appointments.Count} appointments");
             return appointments;
         }
@@ -51,12 +58,12 @@ public class AppointmentService : IAppointmentService
 
             if (appointment == null)
             {
-                var errorMessage = $"Appointment with Id= {id} not found";
+                var errorMessage = $"Appointment with id = {id} not found";
                 _logger.LogWarning(errorMessage);
                 return null;
             }
 
-            _logger.LogInformation($"Retrieved appointment id= {id} details");
+            _logger.LogInformation($"Retrieved appointment id = {id} details");
 
             var appointmentRes = _mapper.Map<GetAppointmentResponse>(appointment);
 
@@ -64,7 +71,7 @@ public class AppointmentService : IAppointmentService
         }
         catch (Exception ex)
         {
-            var errorMessage = $"An error occurred while retrieving the appointment with Id= {id}: {ex.Message}";
+            var errorMessage = $"An error occurred while retrieving the appointment with id = {id}: {ex.Message}";
             _logger.LogError(ex, errorMessage);
             throw new Exception(errorMessage);
         }
@@ -76,7 +83,7 @@ public class AppointmentService : IAppointmentService
         {
             var appointments = await _context.Appointments.Where(a => a.HealthcareProfessionalName == hcName).ToListAsync();
 
-            if (appointments == null)
+            if (appointments == null || appointments.Count() == 0)
             {
                 var errorMessage = $"No appointment for healthcare professional {hcName}";
                 _logger.LogWarning(errorMessage);
@@ -107,7 +114,7 @@ public class AppointmentService : IAppointmentService
                 appointmentReq.Duration);
             if (hasConflict)
             {
-                var suggestedTimes = await SuggestNewTimes(
+                var suggestedTimes = await SuggestNewTimesAsync(
                     appointmentReq.HealthcareProfessionalName,
                     appointmentReq.AppointmentDate,
                     appointmentReq.Duration);
@@ -127,7 +134,7 @@ public class AppointmentService : IAppointmentService
                 Success = true
             };
 
-            _logger.LogInformation($"Appointment with id= {appointment.Id} created successfully");
+            _logger.LogInformation($"Appointment with id = {appointment.Id} created successfully");
 
             return appointmentRes;
         }
@@ -146,7 +153,7 @@ public class AppointmentService : IAppointmentService
             var existingAppointment = await _context.Appointments.FindAsync(id);
             if (existingAppointment == null)
             {
-                _logger.LogWarning($"No appointment with id= {id} found for update.");
+                _logger.LogWarning($"No appointment with id = {id} found for update.");
                 return new CreateAppointmentResponse() { Success = false };
             }
 
@@ -165,7 +172,7 @@ public class AppointmentService : IAppointmentService
                 id);
             if (hasConflict)
             {
-                var suggestedTimes = await SuggestNewTimes(
+                var suggestedTimes = await SuggestNewTimesAsync(
                     updateReq.HealthcareProfessionalName,
                     updateReq.AppointmentDate,
                     updateReq.Duration,
@@ -186,13 +193,13 @@ public class AppointmentService : IAppointmentService
 
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation($"Updated appointment with id= {id} details");
+            _logger.LogInformation($"Updated appointment with id = {id} details");
 
             return new CreateAppointmentResponse() { Success = true };
         }
         catch (Exception ex)
         {
-            var errorMessage = $"An error occurred while updating the appointment with id= {id}: {ex.Message}";
+            var errorMessage = $"An error occurred while updating the appointment with id = {id}: {ex.Message}";
             _logger.LogError(ex, errorMessage);
             throw new Exception(errorMessage);
         }
@@ -205,7 +212,7 @@ public class AppointmentService : IAppointmentService
             var existingAppointment = await _context.Appointments.FindAsync(id);
             if (existingAppointment == null)
             {
-                var errorMessage = $"No appointment with id= {id} found for deletion.";
+                var errorMessage = $"No appointment with id = {id} found for deletion.";
                 _logger.LogWarning(errorMessage);
                 return false;
             }
@@ -214,22 +221,33 @@ public class AppointmentService : IAppointmentService
 
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation($"Deleted appointment with id= {id}");
+            _logger.LogInformation($"Deleted appointment with id = {id}");
 
             return true;
         }
         catch (Exception ex)
         {
-            var errorMessage = $"An error occurred while deleting the appointment with id= {id}: {ex.Message}";
+            var errorMessage = $"An error occurred while deleting the appointment with id = {id}: {ex.Message}";
             _logger.LogError(ex, errorMessage);
             throw new Exception(errorMessage);
         }
     }
 
+    /// <summary>
+    /// Checks if there is a scheduling conflict for a given healthcare professional, date, and duration.
+    /// </summary>
+    /// <param name="hcProfName">The name of the healthcare professional.</param>
+    /// <param name="wantedDate">The desired appointment date and time.</param>
+    /// <param name="duration">The duration of the appointment in minutes.</param>
+    /// <param name="id">The ID of the appointment to exclude from the conflict check (optional).</param>
+    /// <returns>True if there is a scheduling conflict, otherwise false.</returns>
     private async Task<bool> HasSchedConflictAsync(string hcProfName, DateTime wantedDate, int duration, int id = 0)
     {
         var endDate = wantedDate.AddMinutes(duration);
 
+        // Does {hcProfName} has an appointment that starts before the wanted appointment finises, 
+        // and ends after the wanted appointment starts?
+        //In case of an update, exclude the updated appointment from the list
         return await _context.Appointments.AnyAsync(a =>
         (hcProfName == "All" || a.HealthcareProfessionalName == hcProfName) &&
         a.AppointmentDate < endDate &&
@@ -237,14 +255,26 @@ public class AppointmentService : IAppointmentService
         (id == 0 || a.Id != id));
     }
 
-    private async Task<List<SuggestedTimeResponse>> SuggestNewTimes(string hcProfName, DateTime wantedDate, int duration, int id = 0)
+    /// <summary>
+    /// Suggests new available times for an appointment based on the desired date, duration, and healthcare professional.
+    /// </summary>
+    /// <param name="hcProfName">The name of the healthcare professional.</param>
+    /// <param name="wantedDate">The desired appointment date and time.</param>
+    /// <param name="duration">The duration of the appointment in minutes.</param>
+    /// <param name="id">The ID of the appointment to exclude from the suggestions (optional).</param>
+    /// <returns>A list of suggested times for the appointment.</returns>
+    private async Task<List<SuggestedTimeResponse>> SuggestNewTimesAsync(string hcProfName, DateTime wantedDate, int duration, int id = 0)
     {
         var suggestions = new List<SuggestedTimeResponse>();
 
+        // Set number of new times suggestions
         int maxSuggestions = int.Parse(_config["NumberOfMeetingSuggestions"] ?? "4");
 
+        // Only suggest time from original request date or 5 minutes from now (the farthest of them)
         var suggestionsStart = wantedDate > DateTime.UtcNow.AddMinutes(5) ? wantedDate : DateTime.UtcNow.AddMinutes(5);
 
+        // Get all appointment for the {hcProfName} that ends after the wanted date and time.
+        //In case of an update, exclude the updated appointment from the list
         var scheduled = await _context.Appointments
             .Where(a =>
                 (hcProfName == "All" || a.HealthcareProfessionalName == hcProfName) &&
@@ -256,27 +286,30 @@ public class AppointmentService : IAppointmentService
 
         foreach (var appointment in scheduled)
         {
+            // While there is an available space for a new meeting
             var availableDuration = appointment.AppointmentDate - suggestionsStart;
-            if (availableDuration >= TimeSpan.FromMinutes(duration))
+            while (availableDuration >= TimeSpan.FromMinutes(duration))
             {
+                // Add the suggested meeting to the list
                 suggestions.Add(new SuggestedTimeResponse()
                 {
                     AppointmentStart = suggestionsStart,
                     Duration = duration
                 });
-
+                // If max number of suggestion reached, return the list
                 if (suggestions.Count == maxSuggestions)
                 {
                     return suggestions;
                 }
+                //Update time to check to be after the already suggested time, then update the available space
                 suggestionsStart = suggestionsStart.AddMinutes(duration);
+                availableDuration = appointment.AppointmentDate - suggestionsStart;
             }
-            else
-            {
-                suggestionsStart = appointment.AppointmentDate.AddMinutes(appointment.Duration);
-            }
+            // When there is no more space before the next meeting, update time to check to be at end of scheduled meeting
+            suggestionsStart = appointment.AppointmentDate.AddMinutes(appointment.Duration);
         }
 
+        // When there are no more meetings, add times in {duration} steps to list
         while (suggestions.Count < maxSuggestions)
         {
             suggestions.Add(new SuggestedTimeResponse()

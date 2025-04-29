@@ -26,6 +26,12 @@ namespace MedSched.Api.Controllers
             try
             {
                 var appointments = await _appointmentService.GetAllAppointmentsAsync();
+
+                if (appointments == null || appointments.Count() == 0)
+                {
+                    return NotFound("No appointments found");
+                }
+
                 return Ok(appointments);
             }
             catch (Exception ex)
@@ -44,7 +50,7 @@ namespace MedSched.Api.Controllers
 
                 if (appointment == null)
                 {
-                    return NotFound($"Appointment with Id= {id} not found");
+                    return NotFound($"Appointment with id = {id} not found");
                 }
 
                 return Ok(appointment);
@@ -63,7 +69,7 @@ namespace MedSched.Api.Controllers
             {
                 var appointments = await _appointmentService.GetAppointmentsByHCProfessionalAsync(hcName);
 
-                if (appointments == null)
+                if (appointments == null || appointments.Count() == 0)
                 {
                     return NotFound($"No appointment for healthcare professional {hcName}");
                 }
@@ -108,7 +114,7 @@ namespace MedSched.Api.Controllers
                 {
                     if (response.SuggestedTimes.Count == 0)
                     {
-                        return NotFound($"No appointment with id= {id} found for update.");
+                        return NotFound($"No appointment with id = {id} found for update.");
                     }
                     else
                     {
@@ -134,7 +140,7 @@ namespace MedSched.Api.Controllers
 
                 if (!success)
                 {
-                    return NotFound($"No appointment with id= {id} found for deletion.");
+                    return NotFound($"No appointment with id = {id} found for deletion.");
                 }
 
                 return Ok();
