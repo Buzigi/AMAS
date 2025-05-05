@@ -138,5 +138,19 @@
     "appointmentDate": "2025-05-24T20:20:00Z",
     "duration": 45,
     "description": "Back pain therapy"
+  },
+  {
+    "patientName": "Liron",
+    "healthcareProfessionalName": "Dr. Gilon",
+    "appointmentDate": "2025-05-24T21:20:00Z",
+    "duration": 15,
+    "description": "Aroma therapy"
+  },
+  {
+    "patientName": "Shay",
+    "healthcareProfessionalName": "Dr. Gilon",
+    "appointmentDate": "2025-05-25T20:20:00Z",
+    "duration": 25,
+    "description": "Speech therapy"
   }
 ]

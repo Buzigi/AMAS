@@ -22,6 +22,17 @@ builder.Host.UseSerilog((context, services, configuration) =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Register CORS
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:5173", "http://localhost:5176")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 // Register PostgresSQL
 builder.Services.AddDbContext<MedSchedContext>(opt =>
 {
@@ -49,15 +60,16 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
 builder.Services.AddControllers();
 
-
 var app = builder.Build();
-
 
 //Always allow Swagger (available in Production too)
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseRouting();
+
+// Enable CORS
+app.UseCors();
 
 // When environment is Development or Docker
 if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
